@@ -3,6 +3,8 @@ import moment from 'moment';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Layout from '@/components/Layout';
+import Modal from '@/components/Modal';
+import ImageUpload from '@/components/ImageUpload';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -24,6 +26,8 @@ export default function EditEvent({ evt }) {
 	const [imagePreview, setImagePreview] = useState(
 		evt.image ? evt.image.formats.thumbnail.url : null
 	);
+
+	const [showModal, setShowModal] = useState(false);
 
 	const router = useRouter();
 
@@ -58,6 +62,13 @@ export default function EditEvent({ evt }) {
 		setValues({ ...values, [name]: value });
 	};
 
+	const imageUploaded = async (e) => {
+		const res = await fetch(`${API_URL}/events/${evt.id}`);
+		const data = await res.json();
+
+		setImagePreview(data.image.formats.thumbnail.url);
+		setShowModal(false);
+	};
 	return (
 		<Layout title="Add New Event">
 			<Link href="/events">
@@ -151,11 +162,14 @@ export default function EditEvent({ evt }) {
 				</div>
 			)}
 			<div>
-				<button className="btn-secondary">
+				<button onClick={() => setShowModal(true)} className="btn-secondary">
 					<FaImage />
 					&nbsp;Set Image
 				</button>
 			</div>
+			<Modal show={showModal} onClose={() => setShowModal(false)}>
+				<ImageUpload evtId={evt.id} imageUploaded={imageUploaded} />
+			</Modal>
 		</Layout>
 	);
 }
