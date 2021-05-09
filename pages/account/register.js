@@ -2,6 +2,7 @@ import { FaUser } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useState, useEffect, useContext } from 'react';
+import AuthContext from '@/context/AuthContext';
 import Link from 'next/link';
 import Layout from '@/components/Layout';
 import styles from '@/styles/AuthForm.module.css';
@@ -12,6 +13,10 @@ export default function RegisterPage() {
 	const [password, setPassword] = useState('');
 	const [passwordConfirm, setPasswordConfirm] = useState('');
 
+	const { register, error } = useContext(AuthContext);
+
+	useEffect(() => error && toast.error(error));
+
 	const handleSubmit = (e) => {
 		e.preventDefault();
 
@@ -20,7 +25,7 @@ export default function RegisterPage() {
 			return;
 		}
 
-		console.log({ email, username, password });
+		register({ email, username, password });
 	};
 	return (
 		<Layout title="User Registration">
